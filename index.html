@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StockSim Lab</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+    :root {
+      --ink: #13213a;
+      <!DOCTYPE html>
+      <html lang="zh-Hant">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>StockSim Lab</title>
+          <style>
+            @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+            :root {
+              --ink: #13213a;
+              --muted: #5a6b7f;
+              --accent: #f8b24d;
+              --accent-strong: #f28d28;
+              --mint: #52c1b2;
+              --sky: #d3eef3;
+              --paper: #f7f4ec;
+              --card: #ffffff;
+              --shadow: 0 24px 48px rgba(19, 33, 58, 0.12);
+            }
+
+            * {
+              box-sizing: border-box;
+            }
+
+            body {
+              margin: 0;
+              font-family: "Space Grotesk", "Noto Sans TC", sans-serif;
+              color: var(--ink);
+              background: radial-gradient(circle at top left, #fce7c8, #f7f4ec 35%, #e8f2f5 100%);
+              min-height: 100vh;
+              overflow-x: hidden;
+            }
+
+            .bg-orbit {
+              position: fixed;
+              inset: -20% auto auto -10%;
+              width: 40vw;
+              height: 40vw;
+              background: radial-gradient(circle, rgba(82, 193, 178, 0.35), transparent 70%);
+              filter: blur(10px);
+              z-index: 0;
+            }
+
+            .bg-grid {
+              position: fixed;
+              inset: 0;
+              background-image: linear-gradient(rgba(19, 33, 58, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(19, 33, 58, 0.04) 1px, transparent 1px);
+              background-size: 48px 48px;
+              opacity: 0.35;
+              z-index: 0;
+            }
+
+            .shell {
+              position: relative;
+              z-index: 1;
+              padding: 32px;
+            }
+
+            .panel {
+              background: var(--card);
+              border-radius: 32px;
+              box-shadow: var(--shadow);
+            }
+
+            .login-panel {
+              max-width: 480px;
+              margin: 8vh auto 0;
+              padding: 48px;
+              text-align: center;
+              animation: floatIn 0.8s ease-out;
+            }
+
+            .logo-mark {
+              display: inline-flex;
+              align-items: center;
+              gap: 12px;
+              font-family: "Cormorant Garamond", serif;
+              letter-spacing: 0.08em;
+              font-size: 24px;
+            }
+
+            .logo-mark.small {
+              font-size: 20px;
+              margin-bottom: 32px;
+            }
+
+            .logo-dot {
+              width: 16px;
+              height: 16px;
+              border-radius: 50%;
+              background: var(--accent);
+              box-shadow: 0 0 0 6px rgba(248, 178, 77, 0.2);
+            }
+
+            .login-subtitle {
+              color: var(--muted);
+              margin: 12px 0 32px;
+            }
+
+            .login-card {
+              display: grid;
+              gap: 16px;
+            }
+
+            .field {
+              display: grid;
+              gap: 6px;
+              text-align: left;
+              font-size: 14px;
+              color: var(--muted);
+            }
+
+            .field input {
+              border-radius: 14px;
+              border: 1px solid rgba(19, 33, 58, 0.12);
+              padding: 12px 14px;
+              font-size: 15px;
+              background: #fdfaf3;
+            }
+
+            button {
+              border: none;
+              border-radius: 14px;
+              padding: 12px 18px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            button:hover {
+              transform: translateY(-1px);
+              box-shadow: 0 10px 20px rgba(19, 33, 58, 0.15);
+            }
+
+            .primary {
+              background: var(--accent);
+              color: var(--ink);
+            }
+
+            .secondary {
+              background: var(--mint);
+              color: #ffffff;
+            }
+
+            .app {
+              display: grid;
+              grid-template-columns: 220px minmax(0, 1fr) 260px;
+              gap: 24px;
+            }
+
+            .hidden {
+              display: none;
+            }
+
+            .sidebar {
+              background: rgba(255, 255, 255, 0.7);
+              padding: 28px 20px;
+              border-radius: 28px;
+              box-shadow: var(--shadow);
+              display: flex;
+              flex-direction: column;
+              gap: 24px;
+            }
+
+            .nav {
+              display: grid;
+              gap: 10px;
+            }
+
+            .nav-btn {
+              background: transparent;
+              color: var(--ink);
+              text-align: left;
+              padding: 10px 12px;
+              border-radius: 12px;
+              border: 1px solid transparent;
+            }
+
+            .nav-btn.active {
+              background: #ffffff;
+              border-color: rgba(19, 33, 58, 0.12);
+            }
+
+            .assist {
+              background: #fff4df;
+              padding: 16px;
+              border-radius: 16px;
+              font-size: 14px;
+            }
+
+            .content {
+              display: flex;
+              flex-direction: column;
+              gap: 24px;
+            }
+
+            .topbar {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              background: rgba(255, 255, 255, 0.75);
+              padding: 20px 24px;
+              border-radius: 24px;
+              box-shadow: var(--shadow);
+            }
+
+            .eyebrow {
+              font-size: 12px;
+              letter-spacing: 0.2em;
+              text-transform: uppercase;
+              color: var(--muted);
+            }
+
+            .pill {
+              background: var(--ink);
+              color: #ffffff;
+              padding: 10px 16px;
+              border-radius: 999px;
+              font-size: 13px;
+            }
+
+            .grid {
+              display: grid;
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+              gap: 20px;
+            }
+
+            .grid.single {
+              grid-template-columns: 1fr;
+            }
+
+            .card {
+              background: var(--card);
+              border-radius: 24px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+            }
+
+            .chart-card canvas,
+            .card canvas {
+              width: 100%;
+              margin-top: 12px;
+              background: #f8fbfc;
+              border-radius: 16px;
+            }
+
+            .caption {
+              color: var(--muted);
+              font-size: 13px;
+              margin-top: 8px;
+            }
+
+            .meta {
+              margin: 6px 0 0;
+              font-size: 12px;
+              color: var(--muted);
+            }
+
+            .list {
+              display: grid;
+              gap: 12px;
+            }
+
+            .list-item {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              background: #f7f1e6;
+              padding: 12px 14px;
+              border-radius: 14px;
+            }
+
+            .market-search {
+              display: flex;
+              gap: 10px;
+              margin-bottom: 16px;
+            }
+
+            .market-search input {
+              flex: 1;
+              border-radius: 12px;
+              border: 1px solid rgba(19, 33, 58, 0.15);
+              padding: 10px 12px;
+            }
+
+            .market-info {
+              display: grid;
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+              gap: 10px;
+              margin-bottom: 12px;
+            }
+
+            .market-info.compact {
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .trade-form {
+              display: grid;
+              gap: 12px;
+            }
+
+            .status {
+              margin-top: 12px;
+              color: var(--muted);
+            }
+
+            .table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+
+            .table th,
+            .table td {
+              text-align: left;
+              padding: 12px 8px;
+              border-bottom: 1px solid rgba(19, 33, 58, 0.08);
+            }
+
+            .favorites {
+              background: rgba(255, 255, 255, 0.75);
+              padding: 24px;
+              border-radius: 28px;
+              box-shadow: var(--shadow);
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+            }
+
+            .favorites-list {
+              display: grid;
+              gap: 12px;
+            }
+
+            .favorite-item {
+              background: #eef6f8;
+              padding: 12px;
+              border-radius: 16px;
+              display: grid;
+              gap: 6px;
+            }
+
+            .favorite-head {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 8px;
+            }
+
+            .favorite-name {
+              font-weight: 600;
+            }
+
+            .favorite-note {
+              font-size: 12px;
+              color: var(--muted);
+            }
+
+            .favorite-metrics {
+              display: grid;
+              gap: 2px;
+              font-size: 12px;
+              color: var(--muted);
+            }
+
+            .glossary {
+              background: #fff4df;
+              padding: 16px;
+              border-radius: 16px;
+              font-size: 14px;
+            }
+
+            @keyframes floatIn {
+              from {
+                opacity: 0;
+                transform: translateY(20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+
+            @media (max-width: 1100px) {
+              .app {
+                grid-template-columns: 1fr;
+              }
+
+              .favorites {
+                order: 3;
+              }
+            }
+
+            @media (max-width: 720px) {
+              .shell {
+                padding: 16px;
+              }
+
+              .grid {
+                grid-template-columns: 1fr;
+              }
+
+              .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="bg-orbit"></div>
+          <div class="bg-grid"></div>
+
+          <main class="shell">
+            <section id="login" class="panel login-panel">
+              <div class="logo-mark">
+                <span class="logo-dot"></span>
+                <span class="logo-text">StockSim Lab</span>
+              </div>
+              <p class="login-subtitle">新手友善的股票模擬平台</p>
+              <div class="login-card">
+                <label class="field">
+                  <span>帳號</span>
+                  <input type="text" placeholder="student@example.com" />
+                </label>
+                <label class="field">
+                  <span>密碼</span>
+                  <input type="password" placeholder="••••••••" />
+                </label>
+                <button id="loginBtn" class="primary">登入</button>
+              </div>
+            </section>
+
+            <section id="app" class="app hidden">
+              <aside class="sidebar">
+                <div class="logo-mark small">
+                  <span class="logo-dot"></span>
+                  <span class="logo-text">StockSim Lab</span>
+                </div>
+                <nav class="nav">
+                  <button class="nav-btn active" data-view="home">首頁</button>
+                  <button class="nav-btn" data-view="market">市場</button>
+                  <button class="nav-btn" data-view="trade">交易</button>
+                  <button class="nav-btn" data-view="assets">資產</button>
+                </nav>
+                <div class="assist">
+                  <h3>教學助手</h3>
+                  <p id="hint">點擊市場查看最新股票走勢。</p>
+                </div>
+              </aside>
+
+              <section class="content">
+                <header class="topbar">
+                  <div>
+                    <p class="eyebrow">目前資產</p>
+                    <h1 id="assetValue">$1,000,000</h1>
+                  </div>
+                  <div class="pill" id="riskBadge">風險：中性</div>
+                </header>
+
+                <section id="view-home" class="view">
+                  <div class="grid">
+                    <article class="card chart-card">
+                      <h2>資產走勢</h2>
+                      <canvas id="assetChart" width="760" height="260"></canvas>
+                      <p class="caption">模擬資產折線圖（每日更新）</p>
+                    </article>
+                    <article class="card holdings-card">
+                      <h2>持倉概覽</h2>
+                      <div id="holdingsList" class="list"></div>
+                    </article>
+                  </div>
+                </section>
+
+                <section id="view-market" class="view hidden">
+                  <div class="grid single">
+                    <article class="card">
+                      <h2>股票市場</h2>
+                      <div class="market-search">
+                        <input id="marketInput" type="text" placeholder="輸入股票代號，例如 AAPL" />
+                        <button id="marketSearch" class="secondary">搜尋</button>
+                      </div>
+                      <div class="market-info">
+                        <div>
+                          <p class="eyebrow">目前股票</p>
+                          <h3 id="marketSymbol">AAPL</h3>
+                        </div>
+                        <div>
+                          <p class="eyebrow">今日價格</p>
+                          <h3 id="marketPrice">$185.20</h3>
+                        </div>
+                        <div>
+                          <p class="eyebrow">波動度</p>
+                          <h3 id="marketVol">1.8%</h3>
+                        </div>
+                      </div>
+                      <p id="marketMeta" class="meta">來源：--｜更新時間：--</p>
+                      <canvas id="marketChart" width="760" height="260"></canvas>
+                      <p class="caption">搜尋股票代號可更新今日股市。</p>
+                    </article>
+                  </div>
+                </section>
+
+                <section id="view-trade" class="view hidden">
+                  <div class="grid">
+                    <article class="card">
+                      <h2>模擬交易</h2>
+                      <div class="trade-form">
+                        <label class="field">
+                          <span>股票代號</span>
+                          <input id="tradeSymbol" type="text" placeholder="例如 NVDA" />
+                        </label>
+                        <label class="field">
+                          <span>買入股數</span>
+                          <input id="tradeQty" type="number" min="1" value="10" />
+                        </label>
+                        <button id="tradeBuy" class="primary">模擬買入</button>
+                      </div>
+                      <p id="tradeStatus" class="status">輸入股票代號並進行模擬購買。</p>
+                    </article>
+                    <article class="card">
+                      <h2>市場資訊</h2>
+                      <div class="market-info compact">
+                        <div>
+                          <p class="eyebrow">股票</p>
+                          <h3 id="tradeMarketSymbol">AAPL</h3>
+                        </div>
+                        <div>
+                          <p class="eyebrow">價格</p>
+                          <h3 id="tradeMarketPrice">$185.20</h3>
+                        </div>
+                        <div>
+                          <p class="eyebrow">波動</p>
+                          <h3 id="tradeMarketVol">1.8%</h3>
+                        </div>
+                      </div>
+                      <canvas id="tradeChart" width="360" height="180"></canvas>
+                      <p id="tradeMeta" class="meta">來源：--｜更新時間：--</p>
+                      <p class="caption">此區顯示最新市場資訊。</p>
+                    </article>
+                  </div>
+                </section>
+
+                <section id="view-assets" class="view hidden">
+                  <div class="grid single">
+                    <article class="card">
+                      <h2>資產明細</h2>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>股票</th>
+                            <th>股數</th>
+                            <th>平均成本</th>
+                            <th>市值</th>
+                          </tr>
+                        </thead>
+                        <tbody id="assetTable"></tbody>
+                      </table>
+                    </article>
+                  </div>
+                </section>
+              </section>
+
+              <aside class="favorites">
+                <h2>最愛清單</h2>
+                <div id="favoritesList" class="favorites-list"></div>
+                <div class="glossary">
+                  <h3>名詞解釋</h3>
+                  <p><strong>波動度</strong>：價格變動的幅度，數字越大代表風險越高。</p>
+                  <p><strong>市值</strong>：持倉總價值，等於股價乘股數。</p>
+                </div>
+              </aside>
+            </section>
+          </main>
+
+          <script>
+            const API_BASE = "http://localhost:8000/api";
+            const STORAGE_KEY = "stocksim_session_v1";
+
+            const state = {
+              cash: 1_000_000,
+              holdings: {},
+              favorites: [
+                { symbol: "0050.TW", name: "元大台灣50", market: "台股", note: "ETF" },
+                { symbol: "2330.TW", name: "台積電", market: "台股", note: "半導體" },
+                { symbol: "2317.TW", name: "鴻海", market: "台股", note: "電子製造" },
+                { symbol: "NVDA", name: "NVIDIA", market: "美股", note: "AI GPU" },
+                { symbol: "AAPL", name: "APPLE", market: "美股", note: "消費電子" },
+                { symbol: "MSFT", name: "Microsoft", market: "美股", note: "雲端軟體" },
+                { symbol: "AMZN", name: "Amazon", market: "美股", note: "電商" },
+                { symbol: "TSLA", name: "Tesla", market: "美股", note: "電動車" },
+                { symbol: "META", name: "Meta", market: "美股", note: "社群" },
+                { symbol: "GOOGL", name: "Alphabet", market: "美股", note: "搜尋" },
+              ],
+              marketSymbol: "AAPL",
+              marketSeries: [],
+              assetSeries: [],
+              hasTrades: false,
+            };
+
+            const views = document.querySelectorAll(".view");
+            const navButtons = document.querySelectorAll(".nav-btn");
+            const loginBtn = document.getElementById("loginBtn");
+            const loginPanel = document.getElementById("login");
+            const appPanel = document.getElementById("app");
+            const assetValue = document.getElementById("assetValue");
+            const assetChart = document.getElementById("assetChart");
+            const holdingsList = document.getElementById("holdingsList");
+            const favoritesList = document.getElementById("favoritesList");
+            const assetTable = document.getElementById("assetTable");
+            const hint = document.getElementById("hint");
+            const riskBadge = document.getElementById("riskBadge");
+
+            const marketInput = document.getElementById("marketInput");
+            const marketSearch = document.getElementById("marketSearch");
+            const marketSymbol = document.getElementById("marketSymbol");
+            const marketPrice = document.getElementById("marketPrice");
+            const marketVol = document.getElementById("marketVol");
+            const marketChart = document.getElementById("marketChart");
+            const marketMeta = document.getElementById("marketMeta");
+
+            const tradeSymbol = document.getElementById("tradeSymbol");
+            const tradeQty = document.getElementById("tradeQty");
+            const tradeBuy = document.getElementById("tradeBuy");
+            const tradeStatus = document.getElementById("tradeStatus");
+            const tradeMarketSymbol = document.getElementById("tradeMarketSymbol");
+            const tradeMarketPrice = document.getElementById("tradeMarketPrice");
+            const tradeMarketVol = document.getElementById("tradeMarketVol");
+            const tradeChart = document.getElementById("tradeChart");
+            const tradeMeta = document.getElementById("tradeMeta");
+
+            const formatMoney = (value) => `$${Math.round(value).toLocaleString("en-US")}`;
+            const formatPrice = (value) => `$${Number(value).toFixed(2)}`;
+
+            const loadState = () => {
+              const raw = sessionStorage.getItem(STORAGE_KEY);
+              if (!raw) {
+                return;
+              }
+              try {
+                const saved = JSON.parse(raw);
+                if (typeof saved.cash === "number") {
+                  state.cash = saved.cash;
+                }
+                if (saved.holdings && typeof saved.holdings === "object") {
+                  state.holdings = saved.holdings;
+                }
+                if (typeof saved.marketSymbol === "string") {
+                  state.marketSymbol = saved.marketSymbol;
+                }
+                if (typeof saved.hasTrades === "boolean") {
+                  state.hasTrades = saved.hasTrades;
+                }
+              } catch (error) {
+                console.warn("Session state load failed", error);
+              }
+            };
+
+            const persistState = () => {
+              const payload = {
+                cash: state.cash,
+                holdings: state.holdings,
+                marketSymbol: state.marketSymbol,
+                hasTrades: state.hasTrades,
+              };
+              sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            };
+
+            const fetchQuote = async (symbol, points = 24) => {
+              const params = new URLSearchParams({
+                symbol: symbol.trim(),
+                points: String(points),
+              });
+              const response = await fetch(`${API_BASE}/quote?${params.toString()}`, {
+                cache: "no-store",
+              });
+              if (!response.ok) {
+                throw new Error("Crawler fetch failed");
+              }
+              return response.json();
+            };
+
+            const renderLineChart = (canvas, series, color, labels) => {
+              const ctx = canvas.getContext("2d");
+              const { width, height } = canvas;
+              ctx.clearRect(0, 0, width, height);
+
+              if (!series.length) {
+                return;
+              }
+
+              const padding = 32;
+              const max = Math.max(...series);
+              const min = Math.min(...series);
+              const range = Math.max(1, max - min);
+              const tickCount = 4;
+
+              ctx.strokeStyle = "rgba(19, 33, 58, 0.1)";
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(padding, padding);
+              ctx.lineTo(padding, height - padding);
+              ctx.lineTo(width - padding, height - padding);
+              ctx.stroke();
+
+              ctx.fillStyle = "rgba(19, 33, 58, 0.55)";
+              ctx.font = "11px Space Grotesk";
+              for (let i = 0; i <= tickCount; i += 1) {
+                const ratio = i / tickCount;
+                const value = max - range * ratio;
+                const y = padding + ratio * (height - padding * 2);
+                ctx.fillText(value.toFixed(2), 6, y + 4);
+              }
+
+              const xTicks = Math.min(series.length - 1, 4);
+              for (let i = 0; i <= xTicks; i += 1) {
+                const ratio = i / xTicks;
+                const x = padding + ratio * (width - padding * 2);
+                const label = `${Math.round(ratio * (series.length - 1))}`;
+                ctx.fillText(label, x - 6, height - 8);
+              }
+
+              if (labels?.yLabel) {
+                ctx.save();
+                ctx.translate(14, height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(labels.yLabel, 0, 0);
+                ctx.restore();
+              }
+              if (labels?.xLabel) {
+                ctx.fillText(labels.xLabel, width - padding - 48, height - 10);
+              }
+
+              ctx.strokeStyle = color;
+              ctx.lineWidth = 2.5;
+              ctx.beginPath();
+              series.forEach((value, index) => {
+                const x = padding + (index / (series.length - 1)) * (width - padding * 2);
+                const y = padding + (1 - (value - min) / range) * (height - padding * 2);
+                if (index === 0) {
+                  ctx.moveTo(x, y);
+                } else {
+                  ctx.lineTo(x, y);
+                }
+              });
+              ctx.stroke();
+
+              ctx.fillStyle = "rgba(248, 178, 77, 0.15)";
+              ctx.lineTo(width - padding, height - padding);
+              ctx.lineTo(padding, height - padding);
+              ctx.closePath();
+              ctx.fill();
+            };
+
+            const updateMarket = async (symbol) => {
+              const normalized = symbol.trim().toUpperCase() || "AAPL";
+              state.marketSymbol = normalized;
+              marketSymbol.textContent = normalized;
+              marketPrice.textContent = "擷取中...";
+              marketVol.textContent = "--";
+              tradeMarketSymbol.textContent = normalized;
+              tradeMarketPrice.textContent = "擷取中...";
+              tradeMarketVol.textContent = "--";
+              marketMeta.textContent = "來源：--｜更新時間：--";
+              tradeMeta.textContent = "來源：--｜更新時間：--";
+
+              try {
+                const result = await fetchQuote(normalized, 24);
+                state.marketSeries = result.series;
+                const latest = result.latest;
+                const volatility =
+                  ((Math.max(...state.marketSeries) - Math.min(...state.marketSeries)) / latest) * 100;
+                const metaText = `來源：${result.source}｜更新時間：${result.updatedAt}`;
+
+                marketPrice.textContent = formatPrice(latest);
+                marketVol.textContent = `${volatility.toFixed(1)}%`;
+                tradeMarketPrice.textContent = formatPrice(latest);
+                tradeMarketVol.textContent = `${volatility.toFixed(1)}%`;
+                marketMeta.textContent = metaText;
+                tradeMeta.textContent = metaText;
+
+                renderLineChart(marketChart, state.marketSeries, "#52c1b2", {
+                  xLabel: "時間(天)",
+                  yLabel: "價格",
+                });
+                renderLineChart(tradeChart, state.marketSeries.slice(-12), "#f28d28", {
+                  xLabel: "時間(天)",
+                  yLabel: "價格",
+                });
+                persistState();
+              } catch (error) {
+                marketPrice.textContent = "擷取失敗";
+                tradeMarketPrice.textContent = "擷取失敗";
+                console.warn("Crawler error", error);
+              }
+            };
+
+            const getHoldingsValue = () =>
+              Object.values(state.holdings).reduce((sum, item) => sum + item.qty * item.price, 0);
+
+            const updateAssetSeries = () => {
+              const base = state.cash + getHoldingsValue();
+              const points = 16;
+              if (!state.hasTrades) {
+                state.assetSeries = Array.from({ length: points }, () => base);
+              } else {
+                const range = Math.max(1, base * 0.008);
+                state.assetSeries = Array.from({ length: points }, (_, index) => {
+                  const drift = Math.sin(index / 2) * range * 0.6;
+                  const slope = (index - points / 2) * (range * 0.05);
+                  return Math.max(0, base + drift + slope);
+                });
+              }
+              renderLineChart(assetChart, state.assetSeries, "#13213a", {
+                xLabel: "時間(天)",
+                yLabel: "資產",
+              });
+            };
+
+            const renderHoldings = () => {
+              holdingsList.innerHTML = "";
+              const entries = Object.entries(state.holdings);
+
+              if (!entries.length) {
+                holdingsList.innerHTML = '<div class="list-item">尚未持有股票</div>';
+                return;
+              }
+
+              entries.forEach(([symbol, item]) => {
+                const row = document.createElement("div");
+                row.className = "list-item";
+                row.innerHTML = `<span>${symbol}</span><span>${item.qty} 股</span>`;
+                holdingsList.appendChild(row);
+              });
+            };
+
+            const renderAssetsTable = () => {
+              assetTable.innerHTML = "";
+              const entries = Object.entries(state.holdings);
+
+              if (!entries.length) {
+                assetTable.innerHTML = '<tr><td colspan="4">目前沒有持倉</td></tr>';
+                return;
+              }
+
+              entries.forEach(([symbol, item]) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                  <td>${symbol}</td>
+                  <td>${item.qty}</td>
+                  <td>${formatMoney(item.avgCost)}</td>
+                  <td>${formatMoney(item.qty * item.price)}</td>
+                `;
+                assetTable.appendChild(row);
+              });
+            };
+
+            const renderFavorites = () => {
+              favoritesList.innerHTML = "";
+              state.favorites.forEach((favorite) => {
+                const item = document.createElement("div");
+                item.className = "favorite-item";
+                item.innerHTML = `
+                  <div class="favorite-head">
+                    <div>
+                      <div class="favorite-name">${favorite.name}</div>
+                      <div class="favorite-note">${favorite.market}・${favorite.note}</div>
+                    </div>
+                    <strong>${favorite.symbol}</strong>
+                  </div>
+                  <div class="favorite-metrics">
+                    <span>價格：擷取中...</span>
+                    <span>漲跌：--</span>
+                    <span>成交量：--</span>
+                  </div>
+                `;
+                favoritesList.appendChild(item);
+
+                fetchQuote(favorite.symbol, 10)
+                  .then((result) => {
+                    const change = result.prev ? ((result.latest - result.prev) / result.prev) * 100 : 0;
+                    const metrics = item.querySelector(".favorite-metrics");
+                    metrics.innerHTML = `
+                      <span>價格：${formatPrice(result.latest)}</span>
+                      <span>漲跌：${change.toFixed(2)}%</span>
+                      <span>成交量：${Number(result.volume).toLocaleString("en-US")}</span>
+                    `;
+                  })
+                  .catch((error) => {
+                    const metrics = item.querySelector(".favorite-metrics");
+                    metrics.innerHTML = "<span>爬蟲資料擷取失敗</span>";
+                    console.warn("Favorite crawler error", error);
+                  });
+              });
+            };
+
+            const updateTotals = () => {
+              const total = state.cash + getHoldingsValue();
+              assetValue.textContent = formatMoney(total);
+              const riskLevel = total > 1_050_000 ? "低" : total < 980_000 ? "偏高" : "中性";
+              riskBadge.textContent = `風險：${riskLevel}`;
+            };
+
+            const handleBuy = async () => {
+              const symbol = tradeSymbol.value.trim().toUpperCase();
+              const qty = Number(tradeQty.value);
+              if (!symbol || Number.isNaN(qty) || qty <= 0) {
+                tradeStatus.textContent = "請輸入有效的股票代號與股數。";
+                return;
+              }
+              tradeStatus.textContent = "爬蟲擷取價格中...";
+
+              let price = 0;
+              try {
+                const result = await fetchQuote(symbol, 4);
+                price = result.latest;
+              } catch (error) {
+                tradeStatus.textContent = "爬蟲擷取失敗，無法完成下單。";
+                console.warn("Trade crawler error", error);
+                return;
+              }
+
+              const cost = price * qty;
+              if (cost > state.cash) {
+                tradeStatus.textContent = "資金不足，請降低股數或更換股票。";
+                return;
+              }
+
+              const holding = state.holdings[symbol] ?? { qty: 0, avgCost: 0, price };
+              const newQty = holding.qty + qty;
+              const newAvg = (holding.avgCost * holding.qty + cost) / newQty;
+              state.holdings[symbol] = { qty: newQty, avgCost: newAvg, price };
+              state.cash -= cost;
+              state.hasTrades = true;
+
+              persistState();
+
+              tradeStatus.textContent = `已模擬買入 ${symbol} ${qty} 股，成交價 ${formatPrice(
+                price
+              )}`;
+
+              updateTotals();
+              renderHoldings();
+              renderAssetsTable();
+              updateAssetSeries();
+            };
+
+            const switchView = (view) => {
+              views.forEach((section) => {
+                section.classList.toggle("hidden", section.id !== `view-${view}`);
+              });
+              navButtons.forEach((btn) => {
+                btn.classList.toggle("active", btn.dataset.view === view);
+              });
+              const hints = {
+                home: "在首頁檢視資產總覽與持倉。",
+                market: "輸入股票代號即可模擬今日股市。",
+                trade: "完成買入後可在資產頁查看。",
+                assets: "此處整理你的持倉與市值。",
+              };
+              hint.textContent = hints[view] ?? "";
+            };
+
+            loginBtn.addEventListener("click", () => {
+              loginPanel.classList.add("hidden");
+              appPanel.classList.remove("hidden");
+              updateMarket(state.marketSymbol);
+              renderFavorites();
+              renderHoldings();
+              renderAssetsTable();
+              updateTotals();
+              updateAssetSeries();
+            });
+
+            navButtons.forEach((btn) => {
+              btn.addEventListener("click", () => switchView(btn.dataset.view));
+            });
+
+            marketSearch.addEventListener("click", () => {
+              updateMarket(marketInput.value);
+            });
+
+            tradeBuy.addEventListener("click", handleBuy);
+
+            loadState();
+            updateMarket(state.marketSymbol);
+            renderFavorites();
+            renderHoldings();
+            renderAssetsTable();
+            updateTotals();
+            updateAssetSeries();
+          </script>
+        </body>
+      </html>
+      border-radius: 16px;
+      font-size: 14px;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 20px 24px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .pill {
+      background: var(--ink);
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .grid.single {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-card canvas,
+    .card canvas {
+      width: 100%;
+      margin-top: 12px;
+      background: #f8fbfc;
+      border-radius: 16px;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .meta {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f7f1e6;
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+
+    .market-search {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .market-search input {
+      flex: 1;
+      border-radius: 12px;
+      border: 1px solid rgba(19, 33, 58, 0.15);
+      padding: 10px 12px;
+    }
+
+    .market-info {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .market-info.compact {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .trade-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .status {
+      margin-top: 12px;
+      color: var(--muted);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      text-align: left;
+      padding: 12px 8px;
+      border-bottom: 1px solid rgba(19, 33, 58, 0.08);
+    }
+
+    .favorites {
+      background: rgba(255, 255, 255, 0.75);
+      padding: 24px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .favorites-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .favorite-item {
+      background: #eef6f8;
+      padding: 12px;
+      border-radius: 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .favorite-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .favorite-name {
+      font-weight: 600;
+    }
+
+    .favorite-note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .favorite-metrics {
+      display: grid;
+      gap: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .glossary {
+      background: #fff4df;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 14px;
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .favorites {
+        order: 3;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        padding: 16px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbit"></div>
+  <div class="bg-grid"></div>
+
+  <main class="shell">
+    <section id="login" class="panel login-panel">
+      <div class="logo-mark">
+        <span class="logo-dot"></span>
+        <span class="logo-text">StockSim Lab</span>
+      </div>
+      <p class="login-subtitle">新手友善的股票模擬平台</p>
+      <div class="login-card">
+        <label class="field">
+          <span>帳號</span>
+          <input type="text" placeholder="student@example.com" />
+        </label>
+        <label class="field">
+          <span>密碼</span>
+          <input type="password" placeholder="••••••••" />
+        </label>
+        <button id="loginBtn" class="primary">登入</button>
+      </div>
+    </section>
+
+    <section id="app" class="app hidden">
+      <aside class="sidebar">
+        <div class="logo-mark small">
+          <span class="logo-dot"></span>
+          <span class="logo-text">StockSim Lab</span>
+        </div>
+        <nav class="nav">
+          <button class="nav-btn active" data-view="home">首頁</button>
+          <button class="nav-btn" data-view="market">市場</button>
+          <button class="nav-btn" data-view="trade">交易</button>
+          <button class="nav-btn" data-view="assets">資產</button>
+        </nav>
+        <div class="assist">
+          <h3>教學助手</h3>
+          <p id="hint">點擊市場查看最新股票走勢。</p>
+        </div>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">目前資產</p>
+            <h1 id="assetValue">$1,000,000</h1>
+          </div>
+          <div class="pill" id="riskBadge">風險：中性</div>
+        </header>
+
+        <section id="view-home" class="view">
+          <div class="grid">
+            <article class="card chart-card">
+              <h2>資產走勢</h2>
+              <canvas id="assetChart" width="760" height="260"></canvas>
+              <p class="caption">模擬資產折線圖（每日更新）</p>
+            </article>
+            <article class="card holdings-card">
+              <h2>持倉概覽</h2>
+              <div id="holdingsList" class="list"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-market" class="view hidden">
+          <div class="grid single">
+            <article class="card">
+              <h2>股票市場</h2>
+              <div class="market-search">
+                <input id="marketInput" type="text" placeholder="輸入股票代號，例如 AAPL" />
+                <button id="marketSearch" class="secondary">搜尋</button>
+              </div>
+              <div class="market-info">
+                <div>
+                  <p class="eyebrow">目前股票</p>
+                  <h3 id="marketSymbol">AAPL</h3>
+                </div>
+                <div>
+                  <p class="eyebrow">今日價格</p>
+                  <h3 id="marketPrice">$185.20</h3>
+                </div>
+                <div>
+                  <p class="eyebrow">波動度</p>
+                  <h3 id="marketVol">1.8%</h3>
+                </div>
+              </div>
+              <p id="marketMeta" class="meta">來源：--｜更新時間：--</p>
+              <canvas id="marketChart" width="760" height="260"></canvas>
+              <p class="caption">搜尋股票代號可更新今日股市。</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-trade" class="view hidden">
+          <div class="grid">
+            <article class="card">
+              <h2>模擬交易</h2>
+              <div class="trade-form">
+                <label class="field">
+                  <span>股票代號</span>
+                  <input id="tradeSymbol" type="text" placeholder="例如 NVDA" />
+                </label>
+                <label class="field">
+                  <span>買入股數</span>
+                  <input id="tradeQty" type="number" min="1" value="10" />
+                </label>
+                <button id="tradeBuy" class="primary">模擬買入</button>
+              </div>
+              <p id="tradeStatus" class="status">輸入股票代號並進行模擬購買。</p>
+            </article>
+            <article class="card">
+              <h2>市場資訊</h2>
+              <div class="market-info compact">
+                <div>
+                  <p class="eyebrow">股票</p>
+                  <h3 id="tradeMarketSymbol">AAPL</h3>
+                </div>
+                <div>
+                  <p class="eyebrow">價格</p>
+                  <h3 id="tradeMarketPrice">$185.20</h3>
+                </div>
+                <div>
+                  <p class="eyebrow">波動</p>
+                  <h3 id="tradeMarketVol">1.8%</h3>
+                </div>
+              </div>
+              <canvas id="tradeChart" width="360" height="180"></canvas>
+              <p id="tradeMeta" class="meta">來源：--｜更新時間：--</p>
+              <p class="caption">此區顯示最新市場資訊。</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-assets" class="view hidden">
+          <div class="grid single">
+            <article class="card">
+              <h2>資產明細</h2>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>股票</th>
+                    <th>股數</th>
+                    <th>平均成本</th>
+                    <th>市值</th>
+                  </tr>
+                </thead>
+                <tbody id="assetTable"></tbody>
+              </table>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <aside class="favorites">
+        <h2>最愛清單</h2>
+        <div id="favoritesList" class="favorites-list"></div>
+        <div class="glossary">
+          <h3>名詞解釋</h3>
+          <p><strong>波動度</strong>：價格變動的幅度，數字越大代表風險越高。</p>
+          <p><strong>市值</strong>：持倉總價值，等於股價乘股數。</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = "http://localhost:8000/api";
+    const STORAGE_KEY = "stocksim_session_v1";
+
+    const state = {
+      cash: 1_000_000,
+      holdings: {},
+      favorites: [
+        { symbol: "0050.TW", name: "元大台灣50", market: "台股", note: "ETF" },
+        { symbol: "2330.TW", name: "台積電", market: "台股", note: "半導體" },
+        { symbol: "2317.TW", name: "鴻海", market: "台股", note: "電子製造" },
+        { symbol: "NVDA", name: "NVIDIA", market: "美股", note: "AI GPU" },
+        { symbol: "AAPL", name: "APPLE", market: "美股", note: "消費電子" },
+        { symbol: "MSFT", name: "Microsoft", market: "美股", note: "雲端軟體" },
+        { symbol: "AMZN", name: "Amazon", market: "美股", note: "電商" },
+        { symbol: "TSLA", name: "Tesla", market: "美股", note: "電動車" },
+        { symbol: "META", name: "Meta", market: "美股", note: "社群" },
+        { symbol: "GOOGL", name: "Alphabet", market: "美股", note: "搜尋" },
+      ],
+      marketSymbol: "AAPL",
+      marketSeries: [],
+      assetSeries: [],
+      hasTrades: false,
+    };
+
+    const views = document.querySelectorAll(".view");
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginPanel = document.getElementById("login");
+    const appPanel = document.getElementById("app");
+    const assetValue = document.getElementById("assetValue");
+    const assetChart = document.getElementById("assetChart");
+    const holdingsList = document.getElementById("holdingsList");
+    const favoritesList = document.getElementById("favoritesList");
+    const assetTable = document.getElementById("assetTable");
+    const hint = document.getElementById("hint");
+    const riskBadge = document.getElementById("riskBadge");
+
+    const marketInput = document.getElementById("marketInput");
+    const marketSearch = document.getElementById("marketSearch");
+    const marketSymbol = document.getElementById("marketSymbol");
+    const marketPrice = document.getElementById("marketPrice");
+    const marketVol = document.getElementById("marketVol");
+    const marketChart = document.getElementById("marketChart");
+    const marketMeta = document.getElementById("marketMeta");
+
+    const tradeSymbol = document.getElementById("tradeSymbol");
+    const tradeQty = document.getElementById("tradeQty");
+    const tradeBuy = document.getElementById("tradeBuy");
+    const tradeStatus = document.getElementById("tradeStatus");
+    const tradeMarketSymbol = document.getElementById("tradeMarketSymbol");
+    const tradeMarketPrice = document.getElementById("tradeMarketPrice");
+    const tradeMarketVol = document.getElementById("tradeMarketVol");
+    const tradeChart = document.getElementById("tradeChart");
+    const tradeMeta = document.getElementById("tradeMeta");
+
+    const formatMoney = (value) =>
+      `$${Math.round(value).toLocaleString("en-US")}`;
+    const formatPrice = (value) => `$${Number(value).toFixed(2)}`;
+
+    const loadState = () => {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return;
+      }
+      try {
+        const saved = JSON.parse(raw);
+        if (typeof saved.cash === "number") {
+          state.cash = saved.cash;
+        }
+        if (saved.holdings && typeof saved.holdings === "object") {
+          state.holdings = saved.holdings;
+        }
+        if (typeof saved.marketSymbol === "string") {
+          state.marketSymbol = saved.marketSymbol;
+        }
+        if (typeof saved.hasTrades === "boolean") {
+          state.hasTrades = saved.hasTrades;
+        }
+      } catch (error) {
+        console.warn("Session state load failed", error);
+      }
+    };
+
+    const persistState = () => {
+      const payload = {
+        cash: state.cash,
+        holdings: state.holdings,
+        marketSymbol: state.marketSymbol,
+        hasTrades: state.hasTrades,
+      };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    };
+
+    const fetchQuote = async (symbol, points = 24) => {
+      const params = new URLSearchParams({ symbol, points: String(points) });
+      const response = await fetch(`${API_BASE}/quote?${params.toString()}`, {
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error("Crawler fetch failed");
+      }
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      return data;
+    };
+
+    const renderLineChart = (canvas, series, color, labels) => {
+      const ctx = canvas.getContext("2d");
+      const { width, height } = canvas;
+      ctx.clearRect(0, 0, width, height);
+
+      if (!series.length) {
+        return;
+      }
+
+      const padding = 32;
+      const max = Math.max(...series);
+      const min = Math.min(...series);
+      const range = Math.max(1, max - min);
+      const tickCount = 4;
+
+      ctx.strokeStyle = "rgba(19, 33, 58, 0.1)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding, padding);
+      ctx.lineTo(padding, height - padding);
+      ctx.lineTo(width - padding, height - padding);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(19, 33, 58, 0.55)";
+      ctx.font = "11px Space Grotesk";
+      for (let i = 0; i <= tickCount; i += 1) {
+        const ratio = i / tickCount;
+        const value = max - range * ratio;
+        const y = padding + ratio * (height - padding * 2);
+        ctx.fillText(value.toFixed(2), 6, y + 4);
+      }
+
+      const xTicks = Math.min(series.length - 1, 4);
+      for (let i = 0; i <= xTicks; i += 1) {
+        const ratio = i / xTicks;
+        const x = padding + ratio * (width - padding * 2);
+        const label = `${Math.round(ratio * (series.length - 1))}`;
+        ctx.fillText(label, x - 6, height - 8);
+      }
+
+      if (labels?.yLabel) {
+        ctx.save();
+        ctx.translate(14, height / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(labels.yLabel, 0, 0);
+        ctx.restore();
+      }
+      if (labels?.xLabel) {
+        ctx.fillText(labels.xLabel, width - padding - 48, height - 10);
+      }
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      series.forEach((value, index) => {
+        const x =
+          padding + (index / (series.length - 1)) * (width - padding * 2);
+        const y =
+          padding + (1 - (value - min) / range) * (height - padding * 2);
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(248, 178, 77, 0.15)";
+      ctx.lineTo(width - padding, height - padding);
+      ctx.lineTo(padding, height - padding);
+      ctx.closePath();
+      ctx.fill();
+    };
+
+    const updateMarket = async (symbol) => {
+      const normalized = symbol.trim().toUpperCase() || "AAPL";
+      state.marketSymbol = normalized;
+      marketSymbol.textContent = normalized;
+      marketPrice.textContent = "擷取中...";
+      marketVol.textContent = "--";
+      tradeMarketSymbol.textContent = normalized;
+      tradeMarketPrice.textContent = "擷取中...";
+      tradeMarketVol.textContent = "--";
+      marketMeta.textContent = "來源：--｜更新時間：--";
+      tradeMeta.textContent = "來源：--｜更新時間：--";
+
+      try {
+        const result = await fetchQuote(normalized, 24);
+        state.marketSeries = result.series;
+        const latest = result.latest;
+        const volatility =
+          ((Math.max(...state.marketSeries) - Math.min(...state.marketSeries)) /
+            latest) *
+          100;
+        const metaText = `來源：${result.source}｜更新時間：${result.updatedAt}`;
+
+        marketPrice.textContent = formatPrice(latest);
+        marketVol.textContent = `${volatility.toFixed(1)}%`;
+        tradeMarketPrice.textContent = formatPrice(latest);
+        tradeMarketVol.textContent = `${volatility.toFixed(1)}%`;
+        marketMeta.textContent = metaText;
+        tradeMeta.textContent = metaText;
+
+        renderLineChart(marketChart, state.marketSeries, "#52c1b2", {
+          xLabel: "時間(天)",
+          yLabel: "價格",
+        });
+        renderLineChart(tradeChart, state.marketSeries.slice(-12), "#f28d28", {
+          xLabel: "時間(天)",
+          yLabel: "價格",
+        });
+        persistState();
+      } catch (error) {
+        marketPrice.textContent = "擷取失敗";
+        tradeMarketPrice.textContent = "擷取失敗";
+        console.warn("Crawler error", error);
+      }
+    };
+
+    const getHoldingsValue = () =>
+      Object.values(state.holdings).reduce(
+        (sum, item) => sum + item.qty * item.price,
+        0
+      );
+
+    const updateAssetSeries = () => {
+      const base = state.cash + getHoldingsValue();
+      const points = 16;
+      if (!state.hasTrades) {
+        state.assetSeries = Array.from({ length: points }, () => base);
+      } else {
+        const range = Math.max(1, base * 0.008);
+        state.assetSeries = Array.from({ length: points }, (_, index) => {
+          const drift = Math.sin(index / 2) * range * 0.6;
+          const slope = (index - points / 2) * (range * 0.05);
+          return Math.max(0, base + drift + slope);
+        });
+      }
+      renderLineChart(assetChart, state.assetSeries, "#13213a", {
+        xLabel: "時間(天)",
+        yLabel: "資產",
+      });
+    };
+
+    const renderHoldings = () => {
+      holdingsList.innerHTML = "";
+      const entries = Object.entries(state.holdings);
+
+      if (!entries.length) {
+        holdingsList.innerHTML =
+          "<div class=\"list-item\">尚未持有股票</div>";
+        return;
+      }
+
+      entries.forEach(([symbol, item]) => {
+        const row = document.createElement("div");
+        row.className = "list-item";
+        row.innerHTML = `<span>${symbol}</span><span>${item.qty} 股</span>`;
+        holdingsList.appendChild(row);
+      });
+    };
+
+    const renderAssetsTable = () => {
+      assetTable.innerHTML = "";
+      const entries = Object.entries(state.holdings);
+
+      if (!entries.length) {
+        assetTable.innerHTML =
+          "<tr><td colspan=\"4\">目前沒有持倉</td></tr>";
+        return;
+      }
+
+      entries.forEach(([symbol, item]) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${symbol}</td>
+          <td>${item.qty}</td>
+          <td>${formatMoney(item.avgCost)}</td>
+          <td>${formatMoney(item.qty * item.price)}</td>
+        `;
+        assetTable.appendChild(row);
+      });
+    };
+
+    const renderFavorites = () => {
+      favoritesList.innerHTML = "";
+      state.favorites.forEach((favorite) => {
+        const item = document.createElement("div");
+        item.className = "favorite-item";
+        item.innerHTML = `
+          <div class="favorite-head">
+            <div>
+              <div class="favorite-name">${favorite.name}</div>
+              <div class="favorite-note">${favorite.market}・${favorite.note}</div>
+            </div>
+            <strong>${favorite.symbol}</strong>
+          </div>
+          <div class="favorite-metrics">
+            <span>價格：擷取中...</span>
+            <span>漲跌：--</span>
+            <span>成交量：--</span>
+          </div>
+        `;
+        favoritesList.appendChild(item);
+
+        fetchQuote(favorite.symbol, 10)
+          .then((result) => {
+            const change = result.prev
+              ? ((result.latest - result.prev) / result.prev) * 100
+              : 0;
+            const metrics = item.querySelector(".favorite-metrics");
+            metrics.innerHTML = `
+              <span>價格：${formatPrice(result.latest)}</span>
+              <span>漲跌：${change.toFixed(2)}%</span>
+              <span>成交量：${Number(result.volume).toLocaleString("en-US")}</span>
+            `;
+          })
+          .catch((error) => {
+            const metrics = item.querySelector(".favorite-metrics");
+            metrics.innerHTML = "<span>爬蟲資料擷取失敗</span>";
+            console.warn("Favorite crawler error", error);
+          });
+      });
+    };
+
+    const updateTotals = () => {
+      const total = state.cash + getHoldingsValue();
+      assetValue.textContent = formatMoney(total);
+      const riskLevel = total > 1_050_000 ? "低" : total < 980_000 ? "偏高" : "中性";
+      riskBadge.textContent = `風險：${riskLevel}`;
+    };
+
+    const handleBuy = async () => {
+      const symbol = tradeSymbol.value.trim().toUpperCase();
+      const qty = Number(tradeQty.value);
+      if (!symbol || Number.isNaN(qty) || qty <= 0) {
+        tradeStatus.textContent = "請輸入有效的股票代號與股數。";
+        return;
+      }
+      tradeStatus.textContent = "爬蟲擷取價格中...";
+
+      let price = 0;
+      try {
+        const result = await fetchQuote(symbol, 4);
+        price = result.latest;
+      } catch (error) {
+        tradeStatus.textContent = "爬蟲擷取失敗，無法完成下單。";
+        console.warn("Trade crawler error", error);
+        return;
+      }
+
+      const cost = price * qty;
+      if (cost > state.cash) {
+        tradeStatus.textContent = "資金不足，請降低股數或更換股票。";
+        return;
+      }
+
+      const holding = state.holdings[symbol] ?? { qty: 0, avgCost: 0, price };
+      const newQty = holding.qty + qty;
+      const newAvg = (holding.avgCost * holding.qty + cost) / newQty;
+      state.holdings[symbol] = { qty: newQty, avgCost: newAvg, price };
+      state.cash -= cost;
+      state.hasTrades = true;
+      persistState();
+
+      tradeStatus.textContent = `已模擬買入 ${symbol} ${qty} 股，成交價 ${formatPrice(
+        price
+      )}`;
+
+      updateTotals();
+      renderHoldings();
+      renderAssetsTable();
+      updateAssetSeries();
+    };
+
+    const switchView = (view) => {
+      views.forEach((section) => {
+        section.classList.toggle("hidden", section.id !== `view-${view}`);
+      });
+      navButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.view === view);
+      });
+      const hints = {
+        home: "在首頁檢視資產總覽與持倉。",
+        market: "輸入股票代號即可模擬今日股市。",
+        trade: "完成買入後可在資產頁查看。",
+        assets: "此處整理你的持倉與市值。",
+      };
+      hint.textContent = hints[view] ?? "";
+    };
+
+    loginBtn.addEventListener("click", () => {
+      loginPanel.classList.add("hidden");
+      appPanel.classList.remove("hidden");
+      updateMarket(state.marketSymbol);
+      renderFavorites();
+      renderHoldings();
+      renderAssetsTable();
+      updateTotals();
+      updateAssetSeries();
+    });
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => switchView(btn.dataset.view));
+    });
+
+    marketSearch.addEventListener("click", () => {
+      updateMarket(marketInput.value);
+    });
+
+    tradeBuy.addEventListener("click", handleBuy);
+
+    loadState();
+    updateMarket(state.marketSymbol);
+    renderFavorites();
+    renderHoldings();
+    renderAssetsTable();
+    updateTotals();
+    updateAssetSeries();
+  </script>
+</body>
+</html>
